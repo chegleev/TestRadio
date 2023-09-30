@@ -133,7 +133,7 @@
 <div id="ranzv">Раньше звучали:</div>
 <textarea id="story" name="story" rows="10" disabled="disabled"></textarea>
 <br>
-<div id="donatesBlock">
+<div id="donatesBlock" style="display: none">
 <br>
 <font id="title">Вы можете помочь нам любой суммой,<br>одним из этих способов.</font><br>
 <div class="div-center">
@@ -145,7 +145,6 @@
 </div>
 
 <script>
-  document.getElementById("donatesBlock").style.display = 'block'; //none
   function isMobile() {
     const toMatch = [
         /Android/i,
@@ -161,9 +160,7 @@
     });
 }
 function detect() {
-    if(!isMobile()) {
-      document.getElementById("donatesBlock").style.display = 'none';
-    } else {
+    if(isMobile()) {
       document.getElementById("donatesBlock").style.display = 'block';
     }
 }
