@@ -2,7 +2,7 @@
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
-<title>Radio Metal</title>
+<title>TEST RADIO</title>
 <style>
   body {
     background: #eeeeee;
@@ -156,10 +156,10 @@
     });
 }
 function detect() {
-    if(isMobile() === 'Android') {
-      document.getElementById("donatesBlock").style.display = 'block';
-    } else {
+    if(!isMobile()) {
       document.getElementById("donatesBlock").style.display = 'none';
+    } else {
+      document.getElementById("donatesBlock").style.display = 'block';
     }
 }
 detect();
