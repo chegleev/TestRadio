@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<title>Radio Metal</title>
+<style>
+  body {
+    background: #eeeeee;
+  }
+  font {
+    font-family: sans-serif;
+  }
+  textarea {
+    color: "#000000";
+    font-family: sans-serif;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 70vw;
+    resize: none;
+    overflow-y: scroll;
+    padding: 15px;
+  }
+  textarea::-webkit-scrollbar {
+    width: 5px;
+  }
+  textarea::-webkit-scrollbar-thumb {
+    background-color: #dddddd;
+    border-radius: 5px;
+  }
+  #all {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: #ffffff;
+      border-radius: 10px;
+      border-style: solid;
+      border-width: 2px;
+      border-color: #dddddd;
+      padding: 20px;
+    }
+    #rng {
+      background: #000000;
+      border-radius: 100vw;
+      height: 5px;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 30px;
+      width: 30px;
+      border-radius: 100vw;
+      background: #ffffff;
+      border: 3px solid #000000;
+    }
+    #im {
+      position: absolute;
+      right: 20px;
+      height: 70px;
+      width: 70px;
+      border-radius: 5px;
+      background: #dddddd;
+    }
+    #ranzv {
+      background:#000000;
+      color:#ffffff;
+      padding: 5px;
+      font-family: sans-serif;
+    }
+    #btn {
+      position: relative;
+    }
+    section {
+      margin-top: 10px;
+      margin-bottom: -1px;
+      display: flex;
+      align-items: center;
+      height: 50px;
+      background: #dddddd;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+    section i {
+      margin-top: 50px;
+      transform: translate(0%, -50%);
+      flex: 1 1 100%;
+      height: calc(var(--vol) * var(--c)/360);
+      border-top-left-radius: 100%;
+      border-top-right-radius: 100%;
+      background: #000000;
+    }
+    #gp {
+      width: 70px;
+      height: 75px;
+    }
+    :root {
+      --hv: hidden;
+    }
+    #btnDonat {
+      background-color: #ffffff;
+      border: 1px solid #000000;
+      border-radius: 10px;
+      margin-left: 2px;
+      margin-right: 2px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    .div-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+</style>
+</head> 
+<body>
+<audio id="idaudio" crossorigin="anonymous" preload="none"></audio>
+<div id="all">
+<mydiv></mydiv>
+<center>
+<div style="left: 20px; position: absolute;"><a title="Приложение в сторе" target="_blank" href="https://example.com"><img id="gp" src="units.png"></a></div><img id="btn" src="play.svg" onclick="myBtn()">
+<img id="im">
+<br><br>
+<font id="f">Громкость: 0 %</font><br><br>
+<input id="rng" type="range" min="0" step="0" value="0" oninput="setVolMove()" style="width: 70vw">
+<br><br>
+<font id="title">...</font>
+<section></section>
+<div id="ranzv">Раньше звучали:</div>
+<textarea id="story" name="story" rows="15" disabled="disabled"></textarea>
+<br>
+<div id="donatesBlock">
+<br>
+<font id="title2">Вы можете помочь нам любой суммой,<br>одним из этих способов.</font><br>
+<div class="div-center">
+<button id="btnDonat" class="div-center" type="button" onclick="location.href='intent://ru.sberbankmobile/dialogs?username=WBXRtdVhrQX6mLrby#Intent;scheme=android-app;package=ru.sberbankmobile;end';"><img src="sb.svg"></button>
+<button id="btnDonat" class="div-center" type="button" onclick="location.href='intent://n/chegleev/#Intent;scheme=qiwi;package=ru.mw;end';"><img src="qw.svg"></button>
+<button id="btnDonat" class="div-center" type="button" onclick="location.href='intent://transfer/p2p?to=410012101816159#Intent;scheme=yoomoney;package=ru.yoo.money;end';"><img src="ym.svg"></button>
+</div></div>
+</center>
+</div>
+
+<script>
+  document.getElementById("donatesBlock").style.display = 'block'; //none
+  function isMobile() {
+    const toMatch = [
+        /Android/i,
+        /webOS/i,
+        /iPhone/i,
+        /iPad/i,
+        /iPod/i,
+        /BlackBerry/i,
+        /Windows Phone/i
+    ];
+    return toMatch.some((toMatchItem) => {
+        return navigator.userAgent.match(toMatchItem);
+    });
+}
+function detect() {
+    if(isMobile() === 'Android') {
+      document.getElementById("donatesBlock").style.display = 'block';
+    } else {
+      document.getElementById("donatesBlock").style.display = 'none';
+    }
+}
+detect();
+
+  myStorage = window.localStorage;
+
+  var bol = 1;
+  var b = 0;
+  var player = document.getElementById('idaudio');
+  var but = document.getElementById('btn');
+  var rang = document.getElementById('rng');
+  var f = document.getElementById('f');
+  var t = document.getElementById('title');
+
+  var story = document.getElementById('story');
+
+  var im = document.getElementById('im');
+
+  var sect = document.querySelector('section');
+  var sectdiv = document.querySelector('mydiv');
+
+  var aniBut;
+  var now = "";
+
+  rang.value = myStorage.getItem('vol');
+  sect.style.setProperty('--vol', (50*(100/rang.value)) + 'px');
+  sectdiv.style.setProperty('--vol', (50*(100/rang.value)) + 'px');
+  f.innerHTML = "Громкость: " + rang.value + " %";
+  
+  player.addEventListener("playing", () => {
+    but.src = "stop.svg";
+    aniBut.cancel();
+    bol = 1;
+    sectdiv.style.setProperty('--hv', "visible");
+  });
+
+  goAnalizer();
+
+  function setVolMove() {
+    let v = myStorage.setItem('vol', rang.value);
+    sect.style.setProperty('--vol', (50*(100/rang.value)) + 'px');
+    sectdiv.style.setProperty('--vol', (50*(100/rang.value)) + 'px');
+    player.volume = rang.value / 100;
+    f.innerHTML = "Громкость: " + rang.value + " %";
+  }
+  
+  function myBtn() {
+    if(bol === 1) {
+    if(b === 0) {
+      but.src = "spin.svg";
+      player.volume = myStorage.getItem('vol') / 100;
+      player.src = "https://myradio24.org/6262";
+      player.play();
+      b = 1;
+      bol = 0;
+
+      aniBut = document.getElementById("btn").animate(
+      [
+      {transform: 'rotate(360deg)'}
+      ],
+      {
+        duration: 1000, iterations: Infinity
+      })
+
+    } else {
+      sectdiv.style.setProperty('--hv', "hidden");
+      player.pause();
+      player.currentTime = 0;
+      player.src = "";
+      but.src = "play.svg";
+      b = 0;
+    }
+  }
+  }
+  getTitle();
+
+  let timerId = setInterval(function() {
+    getTitle();
+  }, 5000);
+
+  function getTitle() {
+    var x = new XMLHttpRequest();
+    x.open('GET', 'https://myradio24.com/users/6262/status.json', true);
+    x.onload = function () {
+
+      var list = "";
+      
+      var songsLen = Object.keys(JSON.parse(x.responseText).songs).length - 1;
+
+      for(var i=songsLen; i>=0; i--) {
+        list += JSON.parse(x.responseText).songs[i].time.substring(0, 5) + "\n" + JSON.parse(x.responseText).songs[i].song + "\n\n";
+      }
+
+      story.innerHTML = list.trim("\n");
+
+      if(now !== JSON.parse(x.responseText).song) {
+
+        var aniIm = document.getElementById("im").animate(
+          [
+          {transform: 'rotate(360deg) scale(0.0, 0.0)', opacity: '0.0'}
+          ],
+          {
+            duration: 1000, direction: 'reverse'
+          })
+        im.src = "https://myradio24.com/" + JSON.parse(x.responseText).img;
+      }
+
+      now = JSON.parse(x.responseText).song;
+
+      t.innerHTML = "Сейчас играет:<br><b>" + now + "</b><br><br>";
+    }
+    x.send();
+  }
+
+  function goAnalizer() {
+    const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+
+    const audio = document.querySelector('audio');
+    audio.onplay = () => audioCtx.resume();
+    const source = audioCtx.createMediaElementSource(audio);
+
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2**8;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    const section = document.querySelector('section');
+    const v = (new Array(bufferLength)).fill().map(e => (e = document.createElement('i')) && section.appendChild(e) && e);
+
+    const sectiondiv = document.querySelector('mydiv').appendChild(document.createElement('j'));
+
+    setInterval(() => {
+      analyser.getByteTimeDomainData(dataArray);
+      dataArray.forEach((d, i) => v[i].style.setProperty('--c', Math.abs(128 - d) * 2.8125 | 0));
+    }, 45);
+  }
+</script>
+</body> 
+</html>
