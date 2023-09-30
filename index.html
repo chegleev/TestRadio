@@ -147,26 +147,9 @@
 </div>
 
 <script>
-  function isMobile() {
-    const toMatch = [
-        /Android/i,
-        /webOS/i,
-        /iPhone/i,
-        /iPad/i,
-        /iPod/i,
-        /BlackBerry/i,
-        /Windows Phone/i
-    ];
-    return toMatch.some((toMatchItem) => {
-        return navigator.userAgent.match(toMatchItem);
-    });
+if(navigator.userAgent.includes("Android")) {
+	document.getElementById("donatesBlock").style.display = 'block';
 }
-function detect() {
-    if(isMobile()) {
-      document.getElementById("donatesBlock").style.display = 'block';
-    }
-}
-detect();
 
   myStorage = window.localStorage;
 
